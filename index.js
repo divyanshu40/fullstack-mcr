@@ -26,12 +26,31 @@ async function addJobs(jobsData) {
     }
 }
 
+// function to get all jobs
+async function getAllJobs() {
+    let jobs = await job.find();
+    return jobs;
+}
+
 // POST route to add jobs data
 app.post("/jobs/new", async (req, res) => {
     let jobsData = req.body;
     try {
         let response = await addJobs(jobsData);
         return res.status(201).json(response);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET route to fetch all jobs
+app.get("/jobs", async (req, res) => {
+    try {
+        let response = await getAllJobs();
+        if (response.length === 0) {
+            return res.status(404).json({ message: "No jobs found" });
+        }
+        return res.status(200).json(response);
     } catch(error) {
         res.status(500).json({ error: error.message });
     }
