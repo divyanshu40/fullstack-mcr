@@ -32,6 +32,15 @@ async function getAllJobs() {
     return jobs;
 }
 
+// function to get job details by id
+async function getJobDetailsById(jobId) {
+    let jobDetails = await job.findById(jobId);
+    if (!jobDetails) {
+        return null
+    }
+    return jobDetails;
+}
+
 // POST route to add jobs data
 app.post("/jobs/new", async (req, res) => {
     let jobsData = req.body;
@@ -49,6 +58,20 @@ app.get("/jobs", async (req, res) => {
         let response = await getAllJobs();
         if (response.length === 0) {
             return res.status(404).json({ message: "No jobs found" });
+        }
+        return res.status(200).json(response);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET Route to get job details by id
+app.get("/job/details/:id", async (req, res) => {
+    let jobId = req.params.id;
+    try {
+        let response = await getJobDetailsById(jobId);
+        if (response === null) {
+            return res.status(404).json({ message: "Job not found"});
         }
         return res.status(200).json(response);
     } catch(error) {
