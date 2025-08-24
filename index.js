@@ -56,6 +56,12 @@ async function deleteJobById(jobId) {
     return deletedJob;
 }
 
+// function to get jobs by title
+async function getJObsByTitle(jobTitle) {
+    let jobs = await job.find({ title: jobTitle });
+    return jobs;
+}
+
 // POST route to add jobs data
 app.post("/jobs/new", async (req, res) => {
     let jobsData = req.body;
@@ -110,6 +116,20 @@ app.delete("/job/delete/:id", async (req, res) => {
         let response = await deleteJobById(jobId);
         if (response === null) {
             return res.status(404).json({ message: "Job to be deleted not found"});
+        }
+        return res.status(200).json(response);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// GET route to fetch jobs by title
+app.get("/jobs/title", async (req, res) => {
+    let jobTitle = req.query.jobTitle;
+    try {
+        let response = await getJObsByTitle(jobTitle);
+        if (response.length === 0) {
+            return res.status(404).json({ message: "No jobs found" });
         }
         return res.status(200).json(response);
     } catch(error) {
