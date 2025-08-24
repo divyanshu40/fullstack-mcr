@@ -41,6 +41,21 @@ async function getJobDetailsById(jobId) {
     return jobDetails;
 }
 
+// function to delete all documents
+async function deleteAllJobs() {
+    let deletedJobs = await job.deleteMany({});
+    return deletedJobs
+}
+
+// function to delete job by id
+async function deleteJobById(jobId) {
+    let deletedJob = await job.findByIdAndDelete(jobId);
+    if (!deletedJob) {
+        return null
+    } 
+    return deletedJob;
+}
+
 // POST route to add jobs data
 app.post("/jobs/new", async (req, res) => {
     let jobsData = req.body;
@@ -72,6 +87,29 @@ app.get("/job/details/:id", async (req, res) => {
         let response = await getJobDetailsById(jobId);
         if (response === null) {
             return res.status(404).json({ message: "Job not found"});
+        }
+        return res.status(200).json(response);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// DELETE route to delete all jobs
+app.delete("/jobs/delete", async (req, res) => {
+    try {
+        let response = await deleteAllJobs();
+        return res.status(200).json(response);
+    } catch(error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.delete("/job/delete/:id", async (req, res) => {
+    let jobId = req.params.id;
+    try {
+        let response = await deleteJobById(jobId);
+        if (response === null) {
+            return res.status(404).json({ message: "Job to be deleted not found"});
         }
         return res.status(200).json(response);
     } catch(error) {
